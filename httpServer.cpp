@@ -32,9 +32,32 @@ int main()
     }
 
     // TODO: CREATE AN OUTPUT FOR THE SOCKET VALUE
-    printf("Socket has been created STATUS: %d\n || AT: %d", serverSocket, AF_INET);
+    printf("Socket has been created STATUS: %d\n", serverSocket);
 
-    // Cleanup
+    // Bind the scoket
+    struct sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(3000);
+    serverAddress.sin_addr.s_addr = inet_addr("127.0.0.0");
+
+
+    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
+        printf("Error while binding the socket: %d", WSAGetLastError());
+        closesocket(serverSocket);
+        WSACleanup();
+        return 3;
+    }
+
+
+    // Listen for connections
+    if (listen(serverSocket, 10) == SOCKET_ERROR) {
+        printf("Error while listening for connections: %d", WSAGetLastError());
+        closesocket(serverSocket);
+        WSACleanup();
+        return 4;
+    }
+
+    // Cleanup the winsocket
     closesocket(serverSocket);
     WSACleanup();
 
